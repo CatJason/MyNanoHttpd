@@ -24,23 +24,8 @@ class MainActivity : AppCompatActivity() {
             uri ?: return@registerForActivityResult
             Toast.makeText(applicationContext, uri.toString(), Toast.LENGTH_LONG).show()
 
-            // 用户选择了视频文件后，处理该 URI
-            val filePath = getFilePathFromUri(uri)
-            Log.i("VideoFile", "视频文件路径: $filePath")
-
-            // 弹出 Toast 显示视频文件路径
-            if (filePath != null) {
-                Toast.makeText(applicationContext, "视频文件路径: $filePath", Toast.LENGTH_LONG)
-                    .show()
-            }
-
             // 检查路径是否是 file:// 或 content:// 协议
-            val videoUriPath = if (uri.scheme == "file") {
-                uri.toString()  // 使用 file:// 路径
-            } else {
-                // 使用 content:// 路径
-                uri.toString()
-            }
+            val videoUriPath = uri.toString()
 
             // 加载视频到 WebView 播放
             val videoHtml = """
