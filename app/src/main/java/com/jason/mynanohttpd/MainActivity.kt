@@ -103,21 +103,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 获取文件路径的方法
-    private fun getFilePathFromUri(uri: Uri): String? {
-        val contentResolver: ContentResolver = contentResolver
-        val projection = arrayOf(MediaStore.Video.Media.DATA)
-        val cursor = contentResolver.query(uri, projection, null, null, null)
-
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
-                return it.getString(columnIndex)
-            }
-        }
-        return null
-    }
-
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1001
     }
