@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -85,12 +86,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 在 WebView 中加载视频
     private fun loadVideoInWebView() {
-        // 显示原件视频路径
         val originalVideoName = "test.mp4"  // assets 中的视频文件名
-
-        // 显示原件视频路径（这是 assets 中的文件名，不是实际文件路径）
         originalVideoPath.text = "原件视频路径: assets/$originalVideoName"
 
         // 将 assets 下的 test.mp4 复制到应用的私有目录
@@ -99,55 +96,33 @@ class MainActivity : AppCompatActivity() {
             copyAssetToAppDirectory("test.mp4", videoFile)
         }
 
-        // 使用 MediaStore 保存视频文件，并获取其 content:// URI
-        val values = ContentValues().apply {
-            put(MediaStore.Video.Media.DISPLAY_NAME, "test.mp4")
-            put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
-            put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/${packageName}")
-        }
-        val videoUri: Uri? = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values)
+        // 使用 FileProvider 获取 content:// URI
+        val videoUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", videoFile)
 
-        videoUri?.let { uri ->
-            try {
-                contentResolver.openOutputStream(uri)?.use { outputStream ->
-                    FileInputStream(videoFile).use { inputStream ->
-                        val buffer = ByteArray(1024)
-                        var bytesRead: Int
-                        while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                            outputStream.write(buffer, 0, bytesRead)
-                        }
-                    }
-                }
+        // 显示视频复制路径（实际路径）
+        copiedVideoPath.text = "视频复制路径: ${videoFile.absolutePath}"
 
-                // 显示视频复制路径（实际路径）
-                copiedVideoPath.text = "视频复制路径: ${videoFile.absolutePath}"
+        // 创建视频的 HTML 代码
+        val videoHtml = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>视频播放</title>
+        </head>
+        <body>
+            <video width="100%" height="auto" controls>
+                <source src="$videoUri" type="video/mp4">
+                您的浏览器不支持播放此视频。
+            </video>
+        </body>
+        </html>
+    """
+        // 显示传给 H5 的内容（content:// URI）
+        htmlContent.text = "传给 H5 的内容: $videoUri"
 
-                // 创建视频的 HTML 代码
-                val videoHtml = """
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>视频播放</title>
-                    </head>
-                    <body>
-                        <video width="100%" height="auto" controls>
-                            <source src="$uri" type="video/mp4">
-                            您的浏览器不支持播放此视频。
-                        </video>
-                    </body>
-                    </html>
-                """
-                // 显示传给 H5 的内容（content:// URI）
-                htmlContent.text = "传给 H5 的内容: $uri"
-
-                // 加载视频到 WebView
-                webView.loadDataWithBaseURL(null, videoHtml, "text/html", "UTF-8", null)
-
-            } catch (e: IOException) {
-                e.printStackTrace()
-                Toast.makeText(this, "视频加载失败", Toast.LENGTH_SHORT).show()
-            }
-        }
+        // 加载视频到 WebView
+        webView.loadDataWithBaseURL(null, videoHtml, "text/html", "UTF-8", null)
     }
+
 }
 
