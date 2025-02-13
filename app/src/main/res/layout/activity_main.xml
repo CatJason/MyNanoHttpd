@@ -5,25 +5,38 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- 重新请求权限按钮 -->
-    <Button
-        android:id="@+id/btnRequestPermission"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:text="重新请求权限"
-        android:visibility="visible" />
-
-    <!-- 视频列表 -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
     <!-- WebView 用于播放视频 -->
     <WebView
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
+
+    <!-- 显示视频原件的地址 -->
+    <TextView
+        android:id="@+id/originalVideoPath"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="原件视频路径"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- 显示视频复制件的地址 -->
+    <TextView
+        android:id="@+id/copiedVideoPath"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="视频复制路径"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- 显示传给 H5 的内容 -->
+    <TextView
+        android:id="@+id/htmlContent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="传给 H5 的内容"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"/>
+
 </LinearLayout>
